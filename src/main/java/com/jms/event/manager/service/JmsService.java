@@ -19,7 +19,7 @@ public class JmsService {
 	@Autowired
 	private JmsClientFactory clientFactory;
 	
-	public JmsClient createClient(String id) {
+	public JmsClient createClient(String id) throws IOException {
 		JmsClient jmsClient = clientFactory.createClient();
 		clients.put(id, jmsClient);
 		

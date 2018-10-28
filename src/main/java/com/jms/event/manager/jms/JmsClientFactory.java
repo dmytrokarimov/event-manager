@@ -1,6 +1,8 @@
 package com.jms.event.manager.jms;
 
+import java.io.IOException;
+
 public interface JmsClientFactory {
 	
-	JmsClient createClient();
+	JmsClient createClient() throws IOException;
 }

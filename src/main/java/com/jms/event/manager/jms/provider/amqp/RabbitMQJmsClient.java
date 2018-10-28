@@ -3,9 +3,11 @@ package com.jms.event.manager.jms.provider.amqp;
 import java.io.IOException;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
+import java.util.concurrent.TimeoutException;
 
 import com.jms.event.manager.jms.JmsClient;
 import com.rabbitmq.client.AMQP;
+import com.rabbitmq.client.BuiltinExchangeType;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.Consumer;
@@ -15,6 +17,8 @@ import com.rabbitmq.client.Envelope;
 public class RabbitMQJmsClient implements JmsClient{
 
 	private String queueName;
+
+	private String exchangeName;
 
 	private Channel channel;
 
@@ -30,20 +34,27 @@ public class RabbitMQJmsClient implements JmsClient{
 	
 	@Override
 	public void close() throws IOException {
-		// TODO Auto-generated method stub
-		
+		try {
+			channel.close();
+		} catch (TimeoutException e) {
+			throw new IOException(e);
+		}
 	}
 
 	@Override
 	public void register(String appId, String exchangeName) throws IOException {
-		this.queueName = exchangeName + "_" + appId;
-				
+		this.queueName = appId;
+		
+		channel.exchangeDeclare(exchangeName, BuiltinExchangeType.FANOUT, config.isDurable());
+		
 		channel.queueDeclare(queueName, config.isDurable(), config.isExclusive(), config.isAutoDelete(), null);
 	}
 
 	@Override
 	public void subscribe(String appId, String exchangeName) throws IOException {
-		this.queueName = exchangeName + "_" + appId;
+		this.queueName = appId;
+
+		channel.exchangeDeclare(exchangeName, BuiltinExchangeType.FANOUT, config.isDurable());
 		
 		channel.queueDeclare(queueName, config.isDurable(), config.isExclusive(), config.isAutoDelete(), null);
 		
@@ -75,8 +86,8 @@ public class RabbitMQJmsClient implements JmsClient{
 	}
 
 	@Override
-	public boolean send(byte[] body) {
-		channel.basicPublish
+	public boolean send(byte[] body) throws IOException {
+		channel.basicPublish(exchangeName, exchangeName, null, body);
 		return false;
 	}
 }

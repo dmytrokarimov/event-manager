@@ -1,5 +1,6 @@
 package com.jms.event.manager.controller;
 
+import java.io.IOException;
 import java.util.Optional;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +26,7 @@ public class MessageController {
 	@RequestMapping(method = RequestMethod.POST, value = "/send/{clientId}")
 	public JsonResponse<OperationResult> send(
 			@PathVariable String clientId,
-			@RequestBody byte[] body){
+			@RequestBody byte[] body) throws IOException{
 		Optional<JmsClient> client = jmsService.getClientFor(clientId);
 		
 		if (client.isPresent()) {
@@ -41,7 +42,7 @@ public class MessageController {
 	
 	@RequestMapping(value = "/receive/{clientId}")
 	public JsonResponse<OperationResult> receive(
-			@PathVariable String clientId){
+			@PathVariable String clientId) throws IOException{
 		Optional<JmsClient> client = jmsService.getClientFor(clientId);
 		
 		if (client.isPresent()) {
