@@ -4,12 +4,9 @@ import java.io.IOException;
 import java.util.concurrent.TimeoutException;
 
 import javax.annotation.PostConstruct;
-import javax.validation.constraints.NotNull;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnProperty;
 import org.springframework.boot.context.properties.ConfigurationProperties;
-import org.springframework.boot.context.properties.NestedConfigurationProperty;
 import org.springframework.stereotype.Component;
 
 import com.jms.event.manager.jms.JmsClient;
@@ -19,27 +16,39 @@ import com.jms.event.manager.jms.provider.amqp.RabbitMQJmsClient;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 
+import lombok.Data;
+
 @ConditionalOnProperty(name="jms.provider", havingValue="RABBIT_MQ")
 @Component
-@ConfigurationProperties(prefix="jms")
+@ConfigurationProperties(prefix="jms.rabbitmq")
+@Data
 public class RabbitMQJmsClientFactory implements JmsClientFactory {
 
-	@NotNull
 	private boolean automaticRecovery;
 
-	@NotNull
 	private String hostName;
 	
-	@NestedConfigurationProperty
+	private int port;
+
+	private String userName;
+
+	private String password;
+	
 	private RabbitMQConfig config;
 
 	private Connection connection;
+
 	
 	@PostConstruct
 	public void init() throws IOException, TimeoutException {
 		ConnectionFactory factory = new ConnectionFactory();
 		factory.setHost(hostName);
+		factory.setPort(port);
 		factory.setAutomaticRecoveryEnabled(automaticRecovery);
+		
+		factory.setUsername(userName);
+		factory.setPassword(password);
+		
 		connection = factory.newConnection();
 	}
 	
@@ -48,5 +57,6 @@ public class RabbitMQJmsClientFactory implements JmsClientFactory {
 	public JmsClient createClient() throws IOException {
 		return new RabbitMQJmsClient(connection, config);
 	}
+
 
 }

@@ -44,19 +44,24 @@ public class RabbitMQJmsClient implements JmsClient{
 	@Override
 	public void register(String appId, String exchangeName) throws IOException {
 		this.queueName = appId;
+		this.exchangeName = exchangeName;
 		
 		channel.exchangeDeclare(exchangeName, BuiltinExchangeType.FANOUT, config.isDurable());
 		
-		channel.queueDeclare(queueName, config.isDurable(), config.isExclusive(), config.isAutoDelete(), null);
+//		channel.queueDeclare(queueName, config.isDurable(), config.isExclusive(), config.isAutoDelete(), null);
+		channel.queueBind(queueName, exchangeName, "");
 	}
 
 	@Override
 	public void subscribe(String appId, String exchangeName) throws IOException {
-		this.queueName = appId;
+		this.exchangeName = exchangeName;
 
 		channel.exchangeDeclare(exchangeName, BuiltinExchangeType.FANOUT, config.isDurable());
 		
-		channel.queueDeclare(queueName, config.isDurable(), config.isExclusive(), config.isAutoDelete(), null);
+		channel.queueBind(appId, exchangeName, "");
+//		channel.queueDeclare(queueName, config.isDurable(), config.isExclusive(), config.isAutoDelete(), null).getQueue();
+		
+		this.queueName = channel.queueDeclare().getQueue();
 		
 		receiveQueue = new LinkedBlockingQueue<>();
 		
@@ -65,6 +70,7 @@ public class RabbitMQJmsClient implements JmsClient{
 			public void handleDelivery(String consumerTag, Envelope envelope, AMQP.BasicProperties properties,
 					byte[] body) throws IOException {
 				try {
+					System.out.println("New message: " + envelope.getDeliveryTag());
 					receiveQueue.put(new RabbitMQMessage(envelope.getDeliveryTag(), body));
 				} catch (InterruptedException e) {
 					throw new IOException(e);
@@ -77,7 +83,11 @@ public class RabbitMQJmsClient implements JmsClient{
 	@Override
 	public byte[] receive() throws IOException {
 		try {
+			System.out.println(channel.basicGet(queueName, false));
 			RabbitMQMessage message = receiveQueue.poll(config.getTimeout(), config.getTimeoutTimeUnit());
+			if (message == null) {
+				return null;
+			}
 			channel.basicAck(message.getId(), false);
 			return message.getBody();
 		} catch (InterruptedException e) {
@@ -87,7 +97,7 @@ public class RabbitMQJmsClient implements JmsClient{
 
 	@Override
 	public boolean send(byte[] body) throws IOException {
-		channel.basicPublish(exchangeName, exchangeName, null, body);
-		return false;
+		channel.basicPublish(exchangeName, queueName, null, body);
+		return true;
 	}
 }

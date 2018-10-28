@@ -47,7 +47,10 @@ public class MessageController {
 		
 		if (client.isPresent()) {
 			byte[] message = client.get().receive();
-			return new JsonResponse<>(OperationStates.SUCCESS, new OperationResult(new String(message)));
+			if (message != null) {
+				return new JsonResponse<>(OperationStates.SUCCESS, new OperationResult(new String(message)));
+			}
+			return new JsonResponse<>(OperationStates.NOT_FOUND, new OperationResult("Timeout exceeded. No new messages for Client [" + clientId +"]"));
 		}
 			
 		return new JsonResponse<>(OperationStates.NOT_FOUND, new OperationResult("Client [" + clientId +"] is not found"));

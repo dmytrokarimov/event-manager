@@ -7,7 +7,7 @@ import org.springframework.context.annotation.ComponentScan;
 
 @SpringBootApplication
 @EnableAutoConfiguration
-@ComponentScan({"com.jms.event.manager.service", "com.jms.event.manager.controller"})
+@ComponentScan
 public class Application {
 	public static void main(String[] args) {
 		SpringApplication.run(Application.class, args);

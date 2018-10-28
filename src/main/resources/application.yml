@@ -1,21 +1,22 @@
 manager:
   tokenFormat: "%s%s%s%s%s%s%s%s%s%s%s-%s%s%s%s%s%s%s%s%s%s%s-%s%s%s%s%s%s%s%s%s%s"
-  
   receiveTimeout: 30000
-  
+ 
 jms:
    provider: RABBIT_MQ
    
-   hostName: "35.240.82.108"
    
-   automaticRecovery: true
-   
-   durable: true
-   
-   exclusive: false
-   
-   autoDelete: false
-   
-   timeout: 30000
-   
-   timeoutTimeUnit: TimeUnit.SECONDS
+   rabbitmq:
+      hostName: 35.240.82.108
+      port: 5672
+      automaticRecovery: true
+      
+      userName: test
+      password: test
+      
+      config:
+         durable: true
+         exclusive: false
+         autoDelete: false
+         timeout: 30000
+         timeoutTimeUnit: SECONDS
