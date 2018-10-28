@@ -1,0 +1,5 @@
+manager:
+  tokenFormat: "%s%s%s%s%s%s%s%s%s%s%s-%s%s%s%s%s%s%s%s%s%s%s-%s%s%s%s%s%s%s%s%s%s"
+  receiveTimeout: 30000
+jms:
+   jmsProvideName: RABBIT_MQ
