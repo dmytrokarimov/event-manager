@@ -2,8 +2,11 @@ package com.jms.event.manager.service;
 
 import java.io.IOException;
 import java.util.Map;
+import java.util.Map.Entry;
 import java.util.Optional;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,6 +27,14 @@ public class JmsService {
 		clients.put(id, jmsClient);
 		
 		return jmsClient;
+	}
+	
+	public Set<String> getAllPublishers() {
+		return clients.entrySet().stream().filter(entry -> entry.getValue().isPublisher()).map(Entry::getKey).collect(Collectors.toSet());
+	}
+
+	public Set<String> getAllConsumers() {
+		return clients.entrySet().stream().filter(entry -> entry.getValue().isConsumer()).map(Entry::getKey).collect(Collectors.toSet());
 	}
 	
 	public Optional<JmsClient> getClientFor(String id) {

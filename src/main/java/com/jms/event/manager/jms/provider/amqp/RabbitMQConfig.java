@@ -7,13 +7,17 @@ import lombok.Data;
 @Data
 public class RabbitMQConfig {
 	
+	private String dlqExchangePrefix;
+	
 	private boolean durable;
 
 	private boolean exclusive;
 	
 	private boolean autoDelete;
 	
-	private int timeout;
+	private int receiveTimeout;
 	
-	private TimeUnit timeoutTimeUnit;
+	private TimeUnit receiveTimeoutTimeUnit;
+	
+	private String messageTTL;
 }

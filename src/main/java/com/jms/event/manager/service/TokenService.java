@@ -5,7 +5,7 @@ import java.util.UUID;
 import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.stereotype.Service;
 
-import com.jms.event.manager.dto.AccessToken;
+import com.jms.event.manager.dto.IDToken;
 
 import lombok.Data;
 
@@ -16,9 +16,9 @@ public class TokenService {
 
 	private String tokenFormat;
 	
-	public AccessToken generateToken() {
+	public IDToken generateToken() {
 		String uuid = UUID.randomUUID().toString().replaceAll("-", "");
 		uuid = String.format(tokenFormat, (Object[]) uuid.split(""));
-        return new AccessToken(uuid);
+        return new IDToken(uuid);
 	}
 }

@@ -15,8 +15,10 @@ jms:
       password: test
       
       config:
+         dlqExchangePrefix: dlq
          durable: true
          exclusive: false
          autoDelete: true
-         timeout: 30000
-         timeoutTimeUnit: SECONDS
+         receiveTimeout: 30000
+         receiveTimeoutTimeUnit: SECONDS
+         messageTTL: 1000
