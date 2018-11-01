@@ -1,0 +1,24 @@
+manager:
+  tokenFormat: "%s%s%s%s%s%s%s%s%s%s%s-%s%s%s%s%s%s%s%s%s%s%s-%s%s%s%s%s%s%s%s%s%s"
+  receiveTimeout: 10
+ 
+jms:
+   provider: TEST
+   
+   
+   rabbitmq:
+      hostName: localhost
+      port: 5672
+      automaticRecovery: true
+      
+      userName: test
+      password: test
+      
+      config:
+         dlqExchangePrefix: dlq
+         durable: true
+         exclusive: false
+         autoDelete: true
+         receiveTimeout: 10
+         receiveTimeoutTimeUnit: MILLISECONDS
+         messageTTL: 10
