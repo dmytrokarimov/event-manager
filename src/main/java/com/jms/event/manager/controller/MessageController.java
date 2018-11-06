@@ -15,6 +15,10 @@ import com.jms.event.manager.dto.JsonResponse.OperationStates;
 import com.jms.event.manager.dto.OperationResult;
 import com.jms.event.manager.jms.JmsClient;
 import com.jms.event.manager.service.JmsService;
+import com.jms.event.manager.service.repository.dto.ReceivedMessage;
+import com.jms.event.manager.service.repository.dto.SendMessage;
+import com.jms.event.manager.service.repository.mongo.ReceivedEventLogMongo;
+import com.jms.event.manager.service.repository.mongo.SendEventLogMongo;
 
 @RestController
 @RequestMapping(value = "/event")
@@ -23,11 +27,19 @@ public class MessageController {
 	@Autowired
 	private JmsService jmsService;
 	
+	@Autowired
+	private ReceivedEventLogMongo receivedLogRepository;
+
+	@Autowired
+	private SendEventLogMongo sendLogRepository;
+	
 	@RequestMapping(method = RequestMethod.POST, value = "/send/{clientId}")
 	public JsonResponse<OperationResult> send(
 			@PathVariable String clientId,
 			@RequestBody byte[] body) throws IOException{
 		Optional<JmsClient> client = jmsService.getClientFor(clientId);
+		
+		sendLogRepository.save(new SendMessage(body));
 		
 		if (client.isPresent()) {
 			boolean state = client.get().send(body);
@@ -47,6 +59,7 @@ public class MessageController {
 		
 		if (client.isPresent()) {
 			byte[] message = client.get().receive();
+			receivedLogRepository.save(new ReceivedMessage(message));
 			if (message != null) {
 				return new JsonResponse<>(OperationStates.SUCCESS, new OperationResult(new String(message)));
 			}

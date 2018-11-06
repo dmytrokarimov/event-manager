@@ -1,3 +1,13 @@
+spring:
+   data:
+      mongodb:
+         host: localhost
+         port: 27017
+         authentication-database: admin
+         username: user
+         password: user
+         database: app_log
+
 manager:
   tokenFormat: "%s%s%s%s%s%s%s%s%s%s%s-%s%s%s%s%s%s%s%s%s%s%s-%s%s%s%s%s%s%s%s%s%s"
   receiveTimeout: 10
